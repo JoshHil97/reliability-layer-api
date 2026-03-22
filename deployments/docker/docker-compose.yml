@@ -1,0 +1,53 @@
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: deployments/docker/Dockerfile
+    environment:
+      API_KEY: dev-local-key
+      REDIS_URL: redis://redis:6379/0
+      RATE_LIMIT_PER_MINUTE: 30
+      UPSTREAM_UPSIM_BASE_URL: http://upstream_sim:8080
+      UPSTREAM_UPSIM_TIMEOUT_S: 1.0
+      UPSTREAM_UPSIM_CACHE_TTL_S: 5
+      UPSTREAM_UPSIM_STALE_TTL_S: 60
+      UPSTREAM_UPSIM_ALLOWED_METHODS: GET,POST
+    depends_on:
+      - redis
+      - upstream_sim
+    ports:
+      - "8000:8000"
+
+  upstream_sim:
+    build:
+      context: ../../tools/upstream_sim
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - api
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+
