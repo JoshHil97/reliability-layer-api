@@ -15,19 +15,19 @@ metrics.
 
 ```mermaid
 flowchart TB
-  C[Callers] --> RL[Reliability Layer API]
-  RL --> AUTH[API key auth]
-  AUTH --> RLIM[Rate limiting]
-  RLIM --> ROUTE[Allowlisted routing]
-  ROUTE --> CACHE[Cache and stale-on-error]
-  CACHE --> CB[Circuit breaker]
-  CB --> RETRY[Retry policy]
-  RETRY --> HTTP[HTTPX AsyncClient]
-  HTTP --> UP[Upstreams]
+  C["Callers"] --> RL["Reliability Layer API"]
+  RL --> AUTH["API key auth"]
+  AUTH --> RLIM["Rate limiting"]
+  RLIM --> ROUTE["Allowlisted routing"]
+  ROUTE --> CACHE["Cache and stale-on-error"]
+  CACHE --> CB["Circuit breaker"]
+  CB --> RETRY["Retry policy"]
+  RETRY --> HTTP["HTTPX AsyncClient"]
+  HTTP --> UP["Upstreams"]
 
-  RL --> METRICS[/metrics]
-  METRICS --> PROM[Prometheus]
-  PROM --> GRAF[Grafana]
+  RL --> METRICS["/metrics"]
+  METRICS --> PROM["Prometheus"]
+  PROM --> GRAF["Grafana"]
 ```
 
 ## Behavior Contract
